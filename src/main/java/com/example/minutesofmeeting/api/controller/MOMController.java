@@ -145,7 +145,36 @@ public class MOMController {
 		List<MOMResponse> res = new ArrayList<>();
 
 		momService.findAll().forEach(mom -> {
+			List<Content> listContent=new ArrayList<>();
+			List<Content> content=mom.getContent();
+			for(Content eachContent:content) {
+				Content content1=new Content(eachContent,eachContent);
+				
+				Set<SubContent> subcontent=content1.getSubContent();
+				Set<SubContent> sb1=new HashSet<>();
+				System.out.println("SubContent :" + subcontent.size());
+				for(SubContent eachsubcontent:subcontent) {
+					SubContent sb=new SubContent(eachsubcontent);
+					sb1.add(sb);
+					  System.out.println("for");
+				}
+				  content1.setSubContent(sb1);
+				  listContent.add(content1);
+				
+			
+			
+			}
+			
+			mom.setContent(listContent);
+			List<ActionItem> actionItem=mom.getActionItem();
+			List<ActionItem> at=new ArrayList<>();
+			for(ActionItem eachAt:actionItem) {
+				ActionItem ActionItem=new ActionItem(eachAt,eachAt);
+				at.add(ActionItem);
+			}
+			mom.setActionItem(at);
 			res.add(new MOMResponse(mom));
+			
 		});
 		return res;
 	}
