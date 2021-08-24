@@ -123,7 +123,7 @@ public class MOMController {
 			 MOM mom=new MOM(momRequestEntity);
 			 
 			
-			 momService.saveMOM(mom);
+			momService.saveMOM(mom);
 			response.setStatusCode(200);
 			response.setDescription("MOM successfully updated");
 			
@@ -302,6 +302,62 @@ public class MOMController {
 			res.setDescription("No Data Available");
 			return new ResponseEntity(res, HttpStatus.CONFLICT);
 		}
+		return new ResponseEntity(response, HttpStatus.ACCEPTED);
+
+	}
+	
+	
+	@GetMapping("/mom/non-project")
+	private ResponseEntity getAllMoMForNonProject() {
+
+		List<MOMResponse> response = new ArrayList<>();
+		
+		Project project=new Project();
+
+			momService.findByProject(null).forEach(mom -> {
+
+				MOMResponse	momResponse=new MOMResponse(mom);
+				List<Content> listContent=new ArrayList<>();
+				List<Content> content=momResponse.getContent();
+				
+
+				for(Content eachContent:content) {
+					Content content1=new Content(eachContent,eachContent);
+					
+					Set<SubContent> subcontent=content1.getSubContent();
+					Set<SubContent> sb1=new HashSet<>();
+					System.out.println("SubContent :" + subcontent.size());
+					for(SubContent eachsubcontent:subcontent) {
+						SubContent sb=new SubContent(eachsubcontent);
+						sb1.add(sb);
+						  System.out.println("for");
+					}
+					  content1.setSubContent(sb1);
+					  listContent.add(content1);
+					
+				
+				
+				}
+				
+				momResponse.setContent(listContent);
+				List<ActionItem> actionItem=momResponse.getActionItem();
+				List<ActionItem> at=new ArrayList<>();
+				for(ActionItem eachAt:actionItem) {
+					ActionItem ActionItem=new ActionItem(eachAt,eachAt);
+					at.add(ActionItem);
+				}
+				momResponse.setActionItem(at);
+				response.add(momResponse);
+			});
+			
+			if (response.isEmpty()) {
+				MOMResponse momResponse = new MOMResponse();
+				momResponse.setStatusCode(201);
+				momResponse.setDescription("No Data is Available");
+				return new ResponseEntity(momResponse, HttpStatus.NOT_FOUND);
+			}
+
+		
 		return new ResponseEntity(response, HttpStatus.ACCEPTED);
 
 	}
